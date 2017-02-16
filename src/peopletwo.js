@@ -4,7 +4,7 @@ import { graphql } from 'react-apollo';
 
 class PeopleTwo extends Component {
   render() {
-    const { data: { loading, people } } = this.props;
+    const { data: { loading, person } } = this.props;
 
     if (loading) {
       return <p>Loading…</p>;
@@ -12,26 +12,24 @@ class PeopleTwo extends Component {
 
     return (
       <ul>
-        {
-          people.map(person => (
-            <li key={person.id}>
-              {person.name}
-              {` - `}
-              {person.age}
-            </li>
-          ))
-        }
+        <li>Person ID: {person.id} - Age: {person.age}</li>
       </ul>
     );
   }
 }
 
-export default graphql(
-  gql`{
-    people {
+const peopleTwoQuery = gql`
+  query PersonTwo($id: Int!) {
+    person(id: $id) {
       __typename
       id
       age
     }
-  }`,
-)(PeopleTwo)
+  }
+`
+
+export default graphql(peopleTwoQuery, {
+  options: ({ id }) => ({
+    variables: { id }
+  }),
+})(PeopleTwo)

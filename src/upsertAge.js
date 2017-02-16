@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import gql from 'graphql-tag';
 import { graphql } from 'react-apollo';
-import { update } from 'immutability-helper';
+import update from 'immutability-helper';
 
 class UpsertAge extends Component {
   render() {
-    const { upsertAge } = this.props;
+    const { upsertAge, id } = this.props;
 
     return (
-      <button onClick={() => upsertAge(Math.random() * 3 | 0, Math.random() * 100 | 0)}>Random Age</button>
+      <button onClick={() => upsertAge(id, Math.random() * 100 | 0)}>Random Age</button>
     );
   }
 }
@@ -25,7 +25,7 @@ const upsertAge = gql`
 `;
 
 export default graphql(upsertAge, {
-  props: ({ mutate }) => {
+  props: ({ mutate, ownProps }) => {
     return {
       upsertAge: (id, age) => {
         console.log(id, age);
@@ -38,16 +38,6 @@ export default graphql(upsertAge, {
               id,
               age,
             },
-          },
-          updateQueries: {
-            people: (previousResult, { mutationResult }) => (
-              update(previousResult, {
-                test: console.log(previousResult),
-                people: {
-                  $unshift: [mutationResult.data.upsertAge],
-                },
-              })
-            ),
           },
         });
       },

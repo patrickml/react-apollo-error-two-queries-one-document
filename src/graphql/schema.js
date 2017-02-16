@@ -18,9 +18,9 @@ const PersonType = new GraphQLObjectType({
 });
 
 const peopleData = [
-  { id: 1, name: 'John Smith', age: 20 },
-  { id: 2, name: 'Sara Smith', age: 25 },
-  { id: 3, name: 'Budd Deey', age: 30 },
+  { id: 0, name: 'John Smith', age: 20 },
+  { id: 1, name: 'Sara Smith', age: 25 },
+  { id: 2, name: 'Budd Deey', age: 30 },
 ];
 
 const QueryType = new GraphQLObjectType({
@@ -29,6 +29,13 @@ const QueryType = new GraphQLObjectType({
     people: {
       type: new GraphQLList(PersonType),
       resolve: () => peopleData,
+    },
+    person: {
+      type: PersonType,
+      resolve: (value, { id }) => peopleData[id],
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLInt) },
+      },
     },
   },
 });

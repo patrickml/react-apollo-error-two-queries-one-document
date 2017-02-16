@@ -6,8 +6,7 @@ import UpsertAge from './upsertAge';
 
 class App extends Component {
   render() {
-    const { data: { loading, people } } = this.props;
-
+    const { data: { loading, person } } = this.props;
     if (loading) {
       return <p>Loading…</p>;
     }
@@ -17,41 +16,44 @@ class App extends Component {
         <header>
           <h1>Apollo Client Error Template</h1>
           <p>
-            This is a template that you can use to demonstrate an error in Apollo Client.
-            Edit the source code and watch your browser window reload with the changes.
+            This example shows that when one query updates and returns null for values used by
+            another query that the other queries values are lost. A great example of this is
+            upserting of certain bits of information.
           </p>
           <p>
-            The code which renders this component lives in <code>./src/App.js</code>.
-          </p>
-          <p>
-            The GraphQL schema is in <code>./src/graphql/schema</code>.
-            Currently the schema just serves a list of people with names and ids.
+            Random Person As you can see has a name of <b>`{person.name}`</b>, but when
+            you click Random age to upsert the age and include name in the response (since you might use the same upsert hoc)
+            for your components. <b>`{person.name}`</b> will disappear
           </p>
         </header>
-        <p>List 1:</p>
+        <p>Random Person:</p>
         <ul>
-          {
-            people.map(person => (
-              <li key={person.id}>
-                {person.name}
-              </li>
-            ))
-          }
+          <li>
+            Person ID: {person.id} - Person Name: {person.name}
+          </li>
         </ul>
-        <p>List 2:</p>
-        <PeopleTwo />
-        <UpsertAge />
+        <p>People List:</p>
+        <PeopleTwo id={person.id} />
+        <UpsertAge id={person.id} />
       </main>
     );
   }
 }
 
-export default graphql(
-  gql`{
-    people {
+const personQuery = gql`
+  query Person($id: Int!) {
+    person(id: $id) {
       __typename
       id
       name
     }
-  }`,
-)(App)
+  }
+`;
+
+export default graphql(personQuery, {
+  options: () => ({
+    variables: {
+      id: Math.random() * 3 | 0,
+    },
+  }),
+})(App)
